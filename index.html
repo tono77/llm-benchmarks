@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LLM Benchmark Ranking 2026</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: #0f0f1a; color: #e0e0f0; min-height: 100vh; padding: 20px; }
+  h1 { text-align: center; font-size: 1.4em; color: #a78bfa; margin-bottom: 4px; }
+  .subtitle { text-align: center; font-size: 0.8em; color: #6b7280; margin-bottom: 16px; }
+  .tabs { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-bottom: 14px; }
+  .tab { padding: 6px 14px; border-radius: 20px; border: 1px solid #374151; background: #1f2937; color: #9ca3af; cursor: pointer; font-size: 0.8em; transition: all 0.2s; }
+  .tab.active { background: #7c3aed; border-color: #7c3aed; color: white; }
+  .baseline-box { background: #1c1500; border: 1px solid #d97706; border-radius: 10px; padding: 10px 16px; max-width: 860px; margin: 0 auto 14px; text-align: center; }
+  .baseline-box .bl-title { font-size: 0.78em; color: #f59e0b; font-weight: bold; margin-bottom: 6px; }
+  .baseline-items { display: flex; gap: 18px; flex-wrap: wrap; justify-content: center; }
+  .bl-item { font-size: 0.75em; color: #fde68a; }
+  .bl-item b { color: #f59e0b; }
+  .bl-active { background: #3b2000; border-radius: 6px; padding: 2px 8px; }
+  .chart-wrap { background: #161625; border-radius: 12px; padding: 16px; max-width: 860px; margin: 0 auto 16px; }
+  .chart-container-inner { position: relative; height: 560px; width: 100%; }
+  .company-legend { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 10px; font-size: 0.72em; }
+  .cl-item { display: flex; align-items: center; gap: 5px; color: #9ca3af; }
+  .cl-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+  .table-wrap { max-width: 860px; margin: 0 auto; overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.76em; }
+  th { background: #1e1e35; color: #a78bfa; padding: 9px 7px; text-align: center; }
+  td { padding: 7px; text-align: center; border-bottom: 1px solid #1e1e35; }
+  tr:hover td { background: #1e1e35; }
+  .rank-num { font-weight: bold; color: #f59e0b; }
+  .score-val { font-weight: bold; color: #10b981; }
+  .tag { display: inline-block; padding: 2px 7px; border-radius: 8px; font-size: 0.85em; }
+  .tag-openai { background: #1e1040; color: #a78bfa; }
+  .tag-anthropic { background: #0f2040; color: #60a5fa; }
+  .tag-google { background: #0a2a1a; color: #4ade80; }
+  .tag-china { background: #2a0a20; color: #f472b6; }
+  .tag-other { background: #1a1a1a; color: #9ca3af; }
+  .tag-human { background: #3b2000; color: #f59e0b; font-weight: bold; }
+  .human-row td { background: #1c1500; color: #f59e0b; border-top: 2px solid #d97706; font-style: italic; }
+</style>
+</head>
+<body>
+
+<h1>🤖 LLM Performance vs Human Baselines: 2026</h1>
+<p class="subtitle">Top 20 modelos · Score compuesto · Línea base humana · Marzo 2026</p>
+
+<div class="tabs">
+  <div class="tab active" onclick="showBenchmark('score',this)">Score Compuesto</div>
+  <div class="tab" onclick="showBenchmark('gpqa',this)">GPQA Diamond</div>
+  <div class="tab" onclick="showBenchmark('swe',this)">SWE-bench</div>
+  <div class="tab" onclick="showBenchmark('mmlu',this)">MMLU</div>
+  <div class="tab" onclick="showBenchmark('humaneval',this)">HumanEval</div>
+  <div class="tab" onclick="showBenchmark('math',this)">MATH-500</div>
+</div>
+
+
+
+<div class="chart-wrap">
+  <div class="chart-container-inner">
+  <canvas id="myChart"></canvas>
+  </div>
+  <div class="company-legend">
+    <div class="cl-item"><div class="cl-dot" style="background:#7c3aed"></div>OpenAI</div>
+    <div class="cl-item"><div class="cl-dot" style="background:#2563eb"></div>Anthropic</div>
+    <div class="cl-item"><div class="cl-dot" style="background:#059669"></div>Google</div>
+    <div class="cl-item"><div class="cl-dot" style="background:#db2777"></div>China (Alibaba/DeepSeek/Moonshot/MiniMax/Zhipu)</div>
+    <div class="cl-item"><div class="cl-dot" style="background:#d97706"></div>Otros (xAI/Meta/Mistral/Microsoft)</div>
+    <div class="cl-item"><div class="cl-dot" style="background:#f59e0b; outline: 2px dashed #f59e0b; outline-offset:1px"></div>Línea Humano</div>
+  </div>
+</div>
+
+<div style="max-width:860px;margin:0 auto 16px;display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:10px;">
+  <div style="background:#161625;border-radius:10px;padding:12px 14px;border-left:3px solid #7c3aed">
+    <div style="font-size:0.8em;font-weight:bold;color:#a78bfa;margin-bottom:4px">🔬 GPQA Diamond</div>
+    <div style="font-size:0.73em;color:#9ca3af;line-height:1.5">Preguntas de nivel PhD en biología, química y física. Diseñadas para que ni Google pueda ayudarte. Baseline humano: <b style="color:#f59e0b">51%</b></div>
+  </div>
+  <div style="background:#161625;border-radius:10px;padding:12px 14px;border-left:3px solid #2563eb">
+    <div style="font-size:0.8em;font-weight:bold;color:#60a5fa;margin-bottom:4px">📚 MMLU</div>
+    <div style="font-size:0.73em;color:#9ca3af;line-height:1.5">57 materias académicas (derecho, medicina, historia, matemáticas…). Mide conocimiento general. Casi saturado — top models ya superan al humano. Baseline: <b style="color:#f59e0b">89.8%</b></div>
+  </div>
+  <div style="background:#161625;border-radius:10px;padding:12px 14px;border-left:3px solid #059669">
+    <div style="font-size:0.8em;font-weight:bold;color:#4ade80;margin-bottom:4px">💻 SWE-bench</div>
+    <div style="font-size:0.73em;color:#9ca3af;line-height:1.5">Issues reales de GitHub. El modelo lee un codebase, entiende el bug y escribe el fix. Ingeniería de software en el mundo real. Baseline humano: <b style="color:#f59e0b">15%</b></div>
+  </div>
+  <div style="background:#161625;border-radius:10px;padding:12px 14px;border-left:3px solid #db2777">
+    <div style="font-size:0.8em;font-weight:bold;color:#f472b6;margin-bottom:4px">⌨️ HumanEval</div>
+    <div style="font-size:0.73em;color:#9ca3af;line-height:1.5">Genera funciones de código a partir de una descripción. Mide calidad de código a nivel función. También casi saturado para top models. Baseline: <b style="color:#f59e0b">67%</b></div>
+  </div>
+  <div style="background:#161625;border-radius:10px;padding:12px 14px;border-left:3px solid #d97706">
+    <div style="font-size:0.8em;font-weight:bold;color:#fbbf24;margin-bottom:4px">🧮 MATH-500</div>
+    <div style="font-size:0.73em;color:#9ca3af;line-height:1.5">500 problemas de matemáticas de competencia (álgebra, cálculo, combinatoria). Razonamiento matemático avanzado. Baseline humano experto: <b style="color:#f59e0b">40%</b></div>
+  </div>
+  <div style="background:#161625;border-radius:10px;padding:12px 14px;border-left:3px solid #9ca3af">
+    <div style="font-size:0.8em;font-weight:bold;color:#e5e7eb;margin-bottom:4px">🏆 AIME 2025</div>
+    <div style="font-size:0.73em;color:#9ca3af;line-height:1.5">Examen de matemáticas olímpicas de EE.UU. El más difícil a nivel preuniversitario. Solo ~5% de estudiantes top lo pasan. Baseline humano: <b style="color:#f59e0b">20%</b></div>
+  </div>
+</div>
+
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr><th>#</th><th>Modelo</th><th>Empresa</th><th>Tipo</th><th>Score</th><th>GPQA</th><th>MMLU</th><th>SWE</th><th>HumanEval</th><th>MATH-500</th><th>AIME</th></tr>
+    </thead>
+    <tbody id="tbody"></tbody>
+  </table>
+</div>
+
+<script>
+const MODELS = [
+  ["GPT-5.3 Codex","OpenAI","Propietario",91.8,91.5,93.0,83.0,97.5,97.0,99.0],
+  ["Gemini 3.1 Pro","Google","Propietario",91.3,94.3,91.8,80.6,94.0,97.0,100.0],
+  ["Claude Opus 4.6","Anthropic","Propietario",89.7,91.3,91.5,80.8,95.0,96.7,90.0],
+  ["GPT-5.2","OpenAI","Propietario",89.4,92.4,93.0,76.0,94.5,95.5,96.0],
+  ["GPT-5.4","OpenAI","Propietario",88.8,88.0,92.0,78.0,96.0,96.0,95.0],
+  ["Kimi K2.5","Moonshot","Open-weight",87.9,87.6,92.0,75.0,99.0,98.0,88.0],
+  ["Claude Sonnet 4.6","Anthropic","Propietario",86.9,84.0,90.8,82.0,93.0,93.0,85.0],
+  ["Qwen 3.5 (397B)","Alibaba","Open-weight",85.3,88.4,87.0,74.0,93.0,95.0,82.0],
+  ["Grok 4.1 Fast","xAI","Propietario",84.5,88.0,87.5,72.0,92.0,91.0,85.0],
+  ["Gemini 3.1 Flash","Google","Propietario",83.3,82.0,89.0,72.0,90.0,92.0,88.0],
+  ["👤 Humano Experto","—","Humano",55.2,51.0,89.8,15.0,67.0,40.0,20.0],
+  ["MiniMax M2.5","MiniMax","Open-weight",82.7,80.0,85.0,80.2,88.0,89.0,78.0],
+  ["DeepSeek V3.2","DeepSeek","Open-weight",81.4,80.0,88.5,70.0,91.0,90.0,80.0],
+  ["GPT-5-Mini","OpenAI","Propietario",78.9,76.0,86.0,68.0,90.0,87.0,78.0],
+  ["DeepSeek R1","DeepSeek","Open-weight",78.4,78.0,86.0,65.0,88.0,88.0,78.0],
+  ["GLM-4.7","Zhipu AI","Open-weight",77.8,75.0,83.0,66.0,94.2,86.0,74.0],
+  ["Claude Haiku 4.5","Anthropic","Propietario",76.4,74.0,85.0,65.0,88.0,85.0,72.0],
+  ["LLaMA 4 Scout","Meta","Open-weight",72.7,72.0,82.0,60.0,84.0,80.0,68.0],
+  ["Mistral Large 3","Mistral","Open-weight",71.0,70.0,81.0,58.0,83.0,79.0,65.0],
+  ["Gemma 3 27B","Google","Open-weight",70.1,68.0,80.0,58.0,82.0,78.0,65.0],
+  ["Phi-4 Mini","Microsoft","Open-weight",64.6,62.0,76.0,52.0,78.0,72.0,58.0],
+];
+
+const BENCHMARKS = {
+  score:     { idx:3, label:'Score Compuesto', min:40 },
+  gpqa:      { idx:4, label:'GPQA Diamond (%)', min:40 },
+  mmlu:      { idx:5, label:'MMLU (%)',          min:40 },
+  swe:       { idx:6, label:'SWE-bench (%)',     min:0  },
+  humaneval: { idx:7, label:'HumanEval (%)',     min:40 },
+  math:      { idx:8, label:'MATH-500 (%)',      min:0  },
+};
+
+const COLORS = {
+  OpenAI:'#7c3aed', Anthropic:'#2563eb', Google:'#059669',
+  Moonshot:'#db2777', Alibaba:'#be185d', DeepSeek:'#9d174d',
+  MiniMax:'#db2777', 'Zhipu AI':'#9d174d',
+  xAI:'#d97706', Meta:'#b45309', Mistral:'#92400e', Microsoft:'#78350f',
+  '—':'#f59e0b',
+};
+
+function tagClass(c) {
+  if(c==='OpenAI') return 'tag-openai';
+  if(c==='Anthropic') return 'tag-anthropic';
+  if(c==='Google') return 'tag-google';
+  if(['Moonshot','Alibaba','DeepSeek','MiniMax','Zhipu AI'].includes(c)) return 'tag-china';
+  if(c==='—') return 'tag-human';
+  return 'tag-other';
+}
+
+// Build table
+const tbody = document.getElementById('tbody');
+const medals = ['🥇','🥈','🥉'];
+MODELS.forEach((r,i) => {
+  const isHuman = r[1] === '—';
+  const tr = document.createElement('tr');
+  if (isHuman) tr.style.cssText = 'background:#1c1500;border-top:2px solid #d97706;border-bottom:2px solid #d97706;';
+  tr.innerHTML = `
+    <td class="rank-num" style="${isHuman?'color:#f59e0b':''}">${isHuman?'👤':(medals[i]||i+1)}</td>
+    <td style="text-align:left;font-weight:${isHuman?'bold':'500'};color:${isHuman?'#f59e0b':'inherit'}">${r[0]}</td>
+    <td><span class="tag ${tagClass(r[1])}">${isHuman?'Humano':r[1]}</span></td>
+    <td style="color:${isHuman?'#f59e0b':r[2]==='Propietario'?'#9ca3af':'#34d399'};font-size:0.9em">${r[2]}</td>
+    <td class="score-val" style="${isHuman?'color:#f59e0b':''}">${r[3]}</td>
+    <td style="${isHuman?'color:#fde68a':''}">${r[4]}</td>
+    <td style="${isHuman?'color:#fde68a':''}">${r[5]}</td>
+    <td style="${isHuman?'color:#fde68a':''}">${r[6]}</td>
+    <td style="${isHuman?'color:#fde68a':''}">${r[7]}</td>
+    <td style="${isHuman?'color:#fde68a':''}">${r[8]}</td>
+    <td style="${isHuman?'color:#fde68a':''}">${r[9]}</td>`;
+  tbody.appendChild(tr);
+});
+let chart;
+function showBenchmark(key, el) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+
+  const bench = BENCHMARKS[key];
+  const sorted = [...MODELS].sort((a,b) => b[bench.idx] - a[bench.idx]);
+  const labels = sorted.map(d => d[0]);
+  const values = sorted.map(d => d[bench.idx]);
+  const colors = sorted.map(d => d[1] === '—' ? '#f59e0b' : (COLORS[d[1]] || '#6b7280'));
+
+  if (chart) { chart.destroy(); chart = null; }
+
+  chart = new Chart(document.getElementById('myChart'), {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        data: values,
+        backgroundColor: colors,
+        borderRadius: 5,
+        borderWidth: 0,
+        barPercentage: 0.75,
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: { duration: 400 },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: ctx => {
+              const m = sorted[ctx.dataIndex];
+              return ` ${ctx.raw}%  —  ${m[1] === '—' ? '👤 Humano Experto' : m[1]}`;
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          min: bench.min,
+          max: 100,
+          grid: { color: '#252540' },
+          ticks: { color: '#9ca3af', callback: v => v + '%' }
+        },
+        y: {
+          grid: { display: false },
+          ticks: {
+            color: ctx => sorted[ctx.index]?.[1] === '—' ? '#f59e0b' : '#e0e0f0',
+            font: { size: 11 }
+          }
+        }
+      }
+    }
+  });
+}
+
+// Init on DOMContentLoaded to ensure canvas is ready
+document.addEventListener('DOMContentLoaded', () => {
+  showBenchmark('score', document.querySelector('.tab'));
+});
+</script>
+</body>
+</html>
