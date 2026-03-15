@@ -11,8 +11,30 @@
   h1 { text-align: center; font-size: 1.4em; color: #a78bfa; margin-bottom: 4px; }
   .subtitle { text-align: center; font-size: 0.8em; color: #6b7280; margin-bottom: 16px; }
   .tabs { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-bottom: 14px; }
-  .tab { padding: 6px 14px; border-radius: 20px; border: 1px solid #374151; background: #1f2937; color: #9ca3af; cursor: pointer; font-size: 0.8em; transition: all 0.2s; }
+  .tab { position: relative; padding: 6px 14px; border-radius: 20px; border: 1px solid #374151; background: #1f2937; color: #9ca3af; cursor: pointer; font-size: 0.8em; transition: all 0.2s; }
   .tab.active { background: #7c3aed; border-color: #7c3aed; color: white; }
+  /* Tooltips */
+  .tooltip-parent { position: relative; cursor: help; border-bottom: 1px dashed #4b5563; }
+  .tab:hover::after, .tooltip-parent:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 110%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #11111f;
+    border: 1px solid #374151;
+    color: #e0e0f0;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    white-space: pre-wrap;
+    width: max-content;
+    max-width: 250px;
+    z-index: 100;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    line-height: 1.4;
+    font-weight: normal;
+  }
   .baseline-box { background: #1c1500; border: 1px solid #d97706; border-radius: 10px; padding: 10px 16px; max-width: 860px; margin: 0 auto 14px; text-align: center; }
   .baseline-box .bl-title { font-size: 0.78em; color: #f59e0b; font-weight: bold; margin-bottom: 6px; }
   .baseline-items { display: flex; gap: 18px; flex-wrap: wrap; justify-content: center; }
@@ -68,33 +90,6 @@
     <div class="cl-item"><div class="cl-dot" style="background:#db2777"></div>China (Alibaba/DeepSeek/Moonshot/MiniMax/Zhipu)</div>
     <div class="cl-item"><div class="cl-dot" style="background:#d97706"></div>Otros (xAI/Meta/Mistral/Microsoft)</div>
     <div class="cl-item"><div class="cl-dot" style="background:#f59e0b; outline: 2px dashed #f59e0b; outline-offset:1px"></div>Línea Humano</div>
-  </div>
-</div>
-
-<div style="max-width:860px;margin:0 auto 16px;display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:10px;">
-  <div style="background:#161625;border-radius:10px;padding:12px 14px;border-left:3px solid #7c3aed">
-    <div style="font-size:0.8em;font-weight:bold;color:#a78bfa;margin-bottom:4px">🔬 GPQA Diamond</div>
-    <div style="font-size:0.73em;color:#9ca3af;line-height:1.5">Preguntas de nivel PhD en biología, química y física. Diseñadas para que ni Google pueda ayudarte. Baseline humano: <b style="color:#f59e0b">51%</b></div>
-  </div>
-  <div style="background:#161625;border-radius:10px;padding:12px 14px;border-left:3px solid #2563eb">
-    <div style="font-size:0.8em;font-weight:bold;color:#60a5fa;margin-bottom:4px">📚 MMLU</div>
-    <div style="font-size:0.73em;color:#9ca3af;line-height:1.5">57 materias académicas (derecho, medicina, historia, matemáticas…). Mide conocimiento general. Casi saturado — top models ya superan al humano. Baseline: <b style="color:#f59e0b">89.8%</b></div>
-  </div>
-  <div style="background:#161625;border-radius:10px;padding:12px 14px;border-left:3px solid #059669">
-    <div style="font-size:0.8em;font-weight:bold;color:#4ade80;margin-bottom:4px">💻 SWE-bench</div>
-    <div style="font-size:0.73em;color:#9ca3af;line-height:1.5">Issues reales de GitHub. El modelo lee un codebase, entiende el bug y escribe el fix. Ingeniería de software en el mundo real. Baseline humano: <b style="color:#f59e0b">15%</b></div>
-  </div>
-  <div style="background:#161625;border-radius:10px;padding:12px 14px;border-left:3px solid #db2777">
-    <div style="font-size:0.8em;font-weight:bold;color:#f472b6;margin-bottom:4px">⌨️ HumanEval</div>
-    <div style="font-size:0.73em;color:#9ca3af;line-height:1.5">Genera funciones de código a partir de una descripción. Mide calidad de código a nivel función. También casi saturado para top models. Baseline: <b style="color:#f59e0b">67%</b></div>
-  </div>
-  <div style="background:#161625;border-radius:10px;padding:12px 14px;border-left:3px solid #d97706">
-    <div style="font-size:0.8em;font-weight:bold;color:#fbbf24;margin-bottom:4px">🧮 MATH-500</div>
-    <div style="font-size:0.73em;color:#9ca3af;line-height:1.5">500 problemas de matemáticas de competencia (álgebra, cálculo, combinatoria). Razonamiento matemático avanzado. Baseline humano experto: <b style="color:#f59e0b">40%</b></div>
-  </div>
-  <div style="background:#161625;border-radius:10px;padding:12px 14px;border-left:3px solid #9ca3af">
-    <div style="font-size:0.8em;font-weight:bold;color:#e5e7eb;margin-bottom:4px">🏆 AIME 2025</div>
-    <div style="font-size:0.73em;color:#9ca3af;line-height:1.5">Examen de matemáticas olímpicas de EE.UU. El más difícil a nivel preuniversitario. Solo ~5% de estudiantes top lo pasan. Baseline humano: <b style="color:#f59e0b">20%</b></div>
   </div>
 </div>
 
