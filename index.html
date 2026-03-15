@@ -15,7 +15,7 @@
   .tab { padding: 6px 14px; border-radius: 20px; border: 1px solid #374151; background: #1f2937; color: #9ca3af; cursor: pointer; font-size: 0.8em; transition: all 0.2s; }
   .tab.active { background: #7c3aed; border-color: #7c3aed; color: white; }
   
-  .helper-text { text-align: center; font-size: 0.75em; color: #a78bfa; max-width: 600px; margin: 0 auto 16px; min-height: 32px; background: #161625; border-radius: 6px; padding: 8px; border-left: 3px solid #7c3aed; display: flex; align-items: center; justify-content: center; }
+  .helper-text { text-align: center; font-size: 0.8em; color: #e0e0f0; max-width: 860px; margin: 0 auto 16px; min-height: 24px; padding: 10px; border-radius: 8px; background: #161625; border-left: 4px solid #f59e0b; display: flex; align-items: center; justify-content: center; line-height: 1.4; }
 
   .chart-wrap { background: #161625; border-radius: 12px; padding: 16px; max-width: 860px; margin: 0 auto 16px; }
   .chart-container-inner { position: relative; height: 560px; width: 100%; }
@@ -106,11 +106,11 @@ const MODELS = [
 
 const BENCHMARKS = {
   score:     { idx:3, min:40, text: "Score calculado: GPQA 25%, SWE-bench 25%, MMLU 15%, HumanEval 15%, MATH-500 10%, AIME 10%" },
-  gpqa:      { idx:4, min:40, text: "🔬 GPQA Diamond: Preguntas nivel PhD en ciencia. Diseñadas para que ni Google te ayude. (Baseline: 51%)" },
-  mmlu:      { idx:5, min:40, text: "📚 MMLU: 57 materias académicas. Mide conocimiento general y multidisciplinario. (Baseline: 89.8%)" },
-  swe:       { idx:6, min:0,  text: "💻 SWE-bench: Resolver issues reales de GitHub editando código fuente complejo. (Baseline: 15%)" },
-  humaneval: { idx:7, min:40, text: "⌨️ HumanEval: Generar funciones de código a partir de una descripción. (Baseline: 67%)" },
-  math:      { idx:8, min:0,  text: "🧮 MATH-500: 500 problemas matemáticos avanzados de nivel competencia. (Baseline: 40%)" },
+  gpqa:      { idx:4, min:40, text: "🔬 GPQA Diamond: Preguntas nivel PhD en ciencia. Diseñadas para que ni Google te ayude. <span style='color:#f59e0b;font-weight:bold'>(Baseline Humano: 51%)</span>" },
+  mmlu:      { idx:5, min:40, text: "📚 MMLU: 57 materias académicas. Mide conocimiento general y multidisciplinario. <span style='color:#f59e0b;font-weight:bold'>(Baseline Humano: 89.8%)</span>" },
+  swe:       { idx:6, min:0,  text: "💻 SWE-bench: Resolver issues reales de GitHub editando código fuente complejo. <span style='color:#f59e0b;font-weight:bold'>(Baseline Humano: 15%)</span>" },
+  humaneval: { idx:7, min:40, text: "⌨️ HumanEval: Generar funciones de código a partir de una descripción. <span style='color:#f59e0b;font-weight:bold'>(Baseline Humano: 67%)</span>" },
+  math:      { idx:8, min:0,  text: "🧮 MATH-500: 500 problemas matemáticos avanzados de nivel competencia. <span style='color:#f59e0b;font-weight:bold'>(Baseline Humano: 40%)</span>" },
 };
 
 const COLORS = {
