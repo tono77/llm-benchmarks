@@ -10,20 +10,20 @@
   body { font-family: 'Segoe UI', system-ui, sans-serif; background: #0f0f1a; color: #e0e0f0; min-height: 100vh; padding: 20px; }
   h1 { text-align: center; font-size: 1.4em; color: #a78bfa; margin-bottom: 4px; }
   .subtitle { text-align: center; font-size: 0.8em; color: #6b7280; margin-bottom: 16px; }
-  
-  .tabs { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-bottom: 10px; }
+  .tabs { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-bottom: 14px; }
   .tab { padding: 6px 14px; border-radius: 20px; border: 1px solid #374151; background: #1f2937; color: #9ca3af; cursor: pointer; font-size: 0.8em; transition: all 0.2s; }
   .tab.active { background: #7c3aed; border-color: #7c3aed; color: white; }
-  
-  .helper-text { text-align: center; font-size: 0.8em; color: #e0e0f0; max-width: 860px; margin: 0 auto 16px; min-height: 24px; padding: 10px; border-radius: 8px; background: #161625; border-left: 4px solid #f59e0b; display: flex; align-items: center; justify-content: center; line-height: 1.4; }
-
+  .baseline-box { background: #1c1500; border: 1px solid #d97706; border-radius: 10px; padding: 10px 16px; max-width: 860px; margin: 0 auto 14px; text-align: center; }
+  .baseline-box .bl-title { font-size: 0.78em; color: #f59e0b; font-weight: bold; margin-bottom: 6px; }
+  .baseline-items { display: flex; gap: 18px; flex-wrap: wrap; justify-content: center; }
+  .bl-item { font-size: 0.75em; color: #fde68a; }
+  .bl-item b { color: #f59e0b; }
+  .bl-active { background: #3b2000; border-radius: 6px; padding: 2px 8px; }
   .chart-wrap { background: #161625; border-radius: 12px; padding: 16px; max-width: 860px; margin: 0 auto 16px; }
   .chart-container-inner { position: relative; height: 560px; width: 100%; }
-  
   .company-legend { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 10px; font-size: 0.72em; }
   .cl-item { display: flex; align-items: center; gap: 5px; color: #9ca3af; }
   .cl-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
-  
   .table-wrap { max-width: 860px; margin: 0 auto; overflow-x: auto; }
   table { width: 100%; border-collapse: collapse; font-size: 0.76em; }
   th { background: #1e1e35; color: #a78bfa; padding: 9px 7px; text-align: center; }
@@ -32,13 +32,13 @@
   .rank-num { font-weight: bold; color: #f59e0b; }
   .score-val { font-weight: bold; color: #10b981; }
   .tag { display: inline-block; padding: 2px 7px; border-radius: 8px; font-size: 0.85em; }
-  
   .tag-openai { background: #1e1040; color: #a78bfa; }
   .tag-anthropic { background: #0f2040; color: #60a5fa; }
   .tag-google { background: #0a2a1a; color: #4ade80; }
   .tag-china { background: #2a0a20; color: #f472b6; }
   .tag-other { background: #1a1a1a; color: #9ca3af; }
   .tag-human { background: #3b2000; color: #f59e0b; font-weight: bold; }
+  .human-row td { background: #1c1500; color: #f59e0b; border-top: 2px solid #d97706; font-style: italic; }
 </style>
 </head>
 <body>
@@ -53,9 +53,10 @@
   <div class="tab" onclick="showBenchmark('mmlu',this)">MMLU</div>
   <div class="tab" onclick="showBenchmark('humaneval',this)">HumanEval</div>
   <div class="tab" onclick="showBenchmark('math',this)">MATH-500</div>
+  <div class="tab" onclick="showBenchmark('osworld',this)">OSWorld-V 🆕</div>
 </div>
 
-<div id="helper-text" class="helper-text">Score calculado: GPQA 25%, SWE-bench 25%, MMLU 15%, HumanEval 15%, MATH-500 10%, AIME 10%</div>
+
 
 <div class="chart-wrap">
   <div class="chart-container-inner">
@@ -65,15 +66,47 @@
     <div class="cl-item"><div class="cl-dot" style="background:#7c3aed"></div>OpenAI</div>
     <div class="cl-item"><div class="cl-dot" style="background:#2563eb"></div>Anthropic</div>
     <div class="cl-item"><div class="cl-dot" style="background:#059669"></div>Google</div>
-    <div class="cl-item"><div class="cl-dot" style="background:#db2777"></div>China (Alibaba/DeepSeek/Moonshot/Zhipu/MiniMax)</div>
-    <div class="cl-item"><div class="cl-dot" style="background:#d97706"></div>Otros</div>
+    <div class="cl-item"><div class="cl-dot" style="background:#db2777"></div>China (Alibaba/DeepSeek/Moonshot/MiniMax/Zhipu)</div>
+    <div class="cl-item"><div class="cl-dot" style="background:#d97706"></div>Otros (xAI/Meta/Mistral/Microsoft)</div>
+    <div class="cl-item"><div class="cl-dot" style="background:#f59e0b; outline: 2px dashed #f59e0b; outline-offset:1px"></div>Línea Humano</div>
+  </div>
+</div>
+
+<div style="max-width:860px;margin:0 auto 16px;display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:10px;">
+  <div style="background:#161625;border-radius:10px;padding:12px 14px;border-left:3px solid #7c3aed">
+    <div style="font-size:0.8em;font-weight:bold;color:#a78bfa;margin-bottom:4px">🔬 GPQA Diamond</div>
+    <div style="font-size:0.73em;color:#9ca3af;line-height:1.5">Preguntas de nivel PhD en biología, química y física. Diseñadas para que ni Google pueda ayudarte. Baseline humano: <b style="color:#f59e0b">51%</b></div>
+  </div>
+  <div style="background:#161625;border-radius:10px;padding:12px 14px;border-left:3px solid #2563eb">
+    <div style="font-size:0.8em;font-weight:bold;color:#60a5fa;margin-bottom:4px">📚 MMLU</div>
+    <div style="font-size:0.73em;color:#9ca3af;line-height:1.5">57 materias académicas (derecho, medicina, historia, matemáticas…). Mide conocimiento general. Casi saturado — top models ya superan al humano. Baseline: <b style="color:#f59e0b">89.8%</b></div>
+  </div>
+  <div style="background:#161625;border-radius:10px;padding:12px 14px;border-left:3px solid #059669">
+    <div style="font-size:0.8em;font-weight:bold;color:#4ade80;margin-bottom:4px">💻 SWE-bench</div>
+    <div style="font-size:0.73em;color:#9ca3af;line-height:1.5">Issues reales de GitHub. El modelo lee un codebase, entiende el bug y escribe el fix. Ingeniería de software en el mundo real. Baseline humano: <b style="color:#f59e0b">15%</b></div>
+  </div>
+  <div style="background:#161625;border-radius:10px;padding:12px 14px;border-left:3px solid #db2777">
+    <div style="font-size:0.8em;font-weight:bold;color:#f472b6;margin-bottom:4px">⌨️ HumanEval</div>
+    <div style="font-size:0.73em;color:#9ca3af;line-height:1.5">Genera funciones de código a partir de una descripción. Mide calidad de código a nivel función. También casi saturado para top models. Baseline: <b style="color:#f59e0b">67%</b></div>
+  </div>
+  <div style="background:#161625;border-radius:10px;padding:12px 14px;border-left:3px solid #d97706">
+    <div style="font-size:0.8em;font-weight:bold;color:#fbbf24;margin-bottom:4px">🧮 MATH-500</div>
+    <div style="font-size:0.73em;color:#9ca3af;line-height:1.5">500 problemas de matemáticas de competencia (álgebra, cálculo, combinatoria). Razonamiento matemático avanzado. Baseline humano experto: <b style="color:#f59e0b">40%</b></div>
+  </div>
+  <div style="background:#161625;border-radius:10px;padding:12px 14px;border-left:3px solid #9ca3af">
+    <div style="font-size:0.8em;font-weight:bold;color:#e5e7eb;margin-bottom:4px">🏆 AIME 2025</div>
+    <div style="font-size:0.73em;color:#9ca3af;line-height:1.5">Examen de matemáticas olímpicas de EE.UU. El más difícil a nivel preuniversitario. Solo ~5% de estudiantes top lo pasan. Baseline humano: <b style="color:#f59e0b">20%</b></div>
+  </div>
+  <div style="background:#161625;border-radius:10px;padding:12px 14px;border-left:3px solid #10b981">
+    <div style="font-size:0.8em;font-weight:bold;color:#34d399;margin-bottom:4px">🖥️ OSWorld-V <span style="background:#065f46;color:#34d399;padding:1px 6px;border-radius:8px;font-size:0.85em">NUEVO</span></div>
+    <div style="font-size:0.73em;color:#9ca3af;line-height:1.5">Automatización de escritorio en entornos reales: web, apps de escritorio, archivos, flujos multi-app. Mide uso de ratón + teclado + pantalla. GPT-5.4 superó al humano por primera vez. Baseline humano experto: <b style="color:#f59e0b">72.4%</b></div>
   </div>
 </div>
 
 <div class="table-wrap">
   <table>
     <thead>
-      <tr><th>#</th><th>Modelo</th><th>Empresa</th><th>Tipo</th><th>Score</th><th>GPQA</th><th>MMLU</th><th>SWE</th><th>HumanEval</th><th>MATH-500</th><th>AIME</th></tr>
+      <tr><th>#</th><th>Modelo</th><th>Empresa</th><th>Tipo</th><th>Score</th><th>GPQA</th><th>MMLU</th><th>SWE</th><th>HumanEval</th><th>MATH-500</th><th>AIME</th><th>OSWorld-V</th></tr>
     </thead>
     <tbody id="tbody"></tbody>
   </table>
@@ -81,36 +114,38 @@
 
 <script>
 const MODELS = [
-  ["GPT-5.3 Codex","OpenAI","Propietario",91.8,91.5,93.0,83.0,97.5,97.0,99.0],
-  ["Gemini 3.1 Pro","Google","Propietario",91.3,94.3,91.8,80.6,94.0,97.0,100.0],
-  ["Claude Opus 4.6","Anthropic","Propietario",89.7,91.3,91.5,80.8,95.0,96.7,90.0],
-  ["GPT-5.2","OpenAI","Propietario",89.4,92.4,93.0,76.0,94.5,95.5,96.0],
-  ["GPT-5.4","OpenAI","Propietario",88.8,88.0,92.0,78.0,96.0,96.0,95.0],
-  ["Kimi K2.5","Moonshot","Open-weight",87.9,87.6,92.0,75.0,99.0,98.0,88.0],
-  ["Claude Sonnet 4.6","Anthropic","Propietario",86.9,84.0,90.8,82.0,93.0,93.0,85.0],
-  ["Qwen 3.5 (397B)","Alibaba","Open-weight",85.3,88.4,87.0,74.0,93.0,95.0,82.0],
-  ["Grok 4.1 Fast","xAI","Propietario",84.5,88.0,87.5,72.0,92.0,91.0,85.0],
-  ["Gemini 3.1 Flash","Google","Propietario",83.3,82.0,89.0,72.0,90.0,92.0,88.0],
-  ["👤 Humano Experto","—","Humano",55.2,51.0,89.8,15.0,67.0,40.0,20.0],
-  ["MiniMax M2.5","MiniMax","Open-weight",82.7,80.0,85.0,80.2,88.0,89.0,78.0],
-  ["DeepSeek V3.2","DeepSeek","Open-weight",81.4,80.0,88.5,70.0,91.0,90.0,80.0],
-  ["GPT-5-Mini","OpenAI","Propietario",78.9,76.0,86.0,68.0,90.0,87.0,78.0],
-  ["DeepSeek R1","DeepSeek","Open-weight",78.4,78.0,86.0,65.0,88.0,88.0,78.0],
-  ["GLM-4.7","Zhipu AI","Open-weight",77.8,75.0,83.0,66.0,94.2,86.0,74.0],
-  ["Claude Haiku 4.5","Anthropic","Propietario",76.4,74.0,85.0,65.0,88.0,85.0,72.0],
-  ["LLaMA 4 Scout","Meta","Open-weight",72.7,72.0,82.0,60.0,84.0,80.0,68.0],
-  ["Mistral Large 3","Mistral","Open-weight",71.0,70.0,81.0,58.0,83.0,79.0,65.0],
-  ["Gemma 3 27B","Google","Open-weight",70.1,68.0,80.0,58.0,82.0,78.0,65.0],
-  ["Phi-4 Mini","Microsoft","Open-weight",64.6,62.0,76.0,52.0,78.0,72.0,58.0],
+  // name, company, type, score, gpqa, mmlu, swe, humaneval, math, aime, osworld
+  ["GPT-5.3 Codex","OpenAI","Propietario",91.8,91.5,93.0,83.0,97.5,97.0,99.0,null],
+  ["Gemini 3.1 Pro","Google","Propietario",91.3,94.3,91.8,80.6,94.0,97.0,100.0,null],
+  ["Claude Opus 4.6","Anthropic","Propietario",89.7,91.3,91.5,80.8,95.0,96.7,90.0,null],
+  ["GPT-5.2","OpenAI","Propietario",89.4,92.4,93.0,76.0,94.5,95.5,96.0,null],
+  ["GPT-5.4","OpenAI","Propietario",88.8,88.0,92.0,78.0,96.0,96.0,95.0,75.0],
+  ["Kimi K2.5","Moonshot","Open-weight",87.9,87.6,92.0,75.0,99.0,98.0,88.0,null],
+  ["Claude Sonnet 4.6","Anthropic","Propietario",86.9,84.0,90.8,82.0,93.0,93.0,85.0,null],
+  ["Qwen 3.5 (397B)","Alibaba","Open-weight",85.3,88.4,87.0,74.0,93.0,95.0,82.0,null],
+  ["Grok 4.1 Fast","xAI","Propietario",84.5,88.0,87.5,72.0,92.0,91.0,85.0,null],
+  ["Gemini 3.1 Flash","Google","Propietario",83.3,82.0,89.0,72.0,90.0,92.0,88.0,null],
+  ["👤 Humano Experto","—","Humano",55.2,51.0,89.8,15.0,67.0,40.0,20.0,72.4],
+  ["MiniMax M2.5","MiniMax","Open-weight",82.7,80.0,85.0,80.2,88.0,89.0,78.0,null],
+  ["DeepSeek V3.2","DeepSeek","Open-weight",81.4,80.0,88.5,70.0,91.0,90.0,80.0,null],
+  ["GPT-5-Mini","OpenAI","Propietario",78.9,76.0,86.0,68.0,90.0,87.0,78.0,null],
+  ["DeepSeek R1","DeepSeek","Open-weight",78.4,78.0,86.0,65.0,88.0,88.0,78.0,null],
+  ["GLM-4.7","Zhipu AI","Open-weight",77.8,75.0,83.0,66.0,94.2,86.0,74.0,null],
+  ["Claude Haiku 4.5","Anthropic","Propietario",76.4,74.0,85.0,65.0,88.0,85.0,72.0,null],
+  ["LLaMA 4 Scout","Meta","Open-weight",72.7,72.0,82.0,60.0,84.0,80.0,68.0,null],
+  ["Mistral Large 3","Mistral","Open-weight",71.0,70.0,81.0,58.0,83.0,79.0,65.0,null],
+  ["Gemma 3 27B","Google","Open-weight",70.1,68.0,80.0,58.0,82.0,78.0,65.0,null],
+  ["Phi-4 Mini","Microsoft","Open-weight",64.6,62.0,76.0,52.0,78.0,72.0,58.0,null],
 ];
 
 const BENCHMARKS = {
-  score:     { idx:3, min:40, text: "Score calculado: GPQA 25%, SWE-bench 25%, MMLU 15%, HumanEval 15%, MATH-500 10%, AIME 10%" },
-  gpqa:      { idx:4, min:40, text: "🔬 GPQA Diamond: Preguntas nivel PhD en ciencia. Diseñadas para que ni Google te ayude. <span style='color:#f59e0b;font-weight:bold'>(Baseline Humano: 51%)</span>" },
-  mmlu:      { idx:5, min:40, text: "📚 MMLU: 57 materias académicas. Mide conocimiento general y multidisciplinario. <span style='color:#f59e0b;font-weight:bold'>(Baseline Humano: 89.8%)</span>" },
-  swe:       { idx:6, min:0,  text: "💻 SWE-bench: Resolver issues reales de GitHub editando código fuente complejo. <span style='color:#f59e0b;font-weight:bold'>(Baseline Humano: 15%)</span>" },
-  humaneval: { idx:7, min:40, text: "⌨️ HumanEval: Generar funciones de código a partir de una descripción. <span style='color:#f59e0b;font-weight:bold'>(Baseline Humano: 67%)</span>" },
-  math:      { idx:8, min:0,  text: "🧮 MATH-500: 500 problemas matemáticos avanzados de nivel competencia. <span style='color:#f59e0b;font-weight:bold'>(Baseline Humano: 40%)</span>" },
+  score:     { idx:3, label:'Score Compuesto', min:40 },
+  gpqa:      { idx:4, label:'GPQA Diamond (%)', min:40 },
+  mmlu:      { idx:5, label:'MMLU (%)',          min:40 },
+  swe:       { idx:6, label:'SWE-bench (%)',     min:0  },
+  humaneval: { idx:7, label:'HumanEval (%)',     min:40 },
+  math:      { idx:8, label:'MATH-500 (%)',      min:0  },
+  osworld:   { idx:10, label:'OSWorld-V (%)', min:0, nullFilter:true, note:'Solo modelos con dato disponible. Baseline humano: 72.4%' },
 };
 
 const COLORS = {
@@ -130,6 +165,7 @@ function tagClass(c) {
   return 'tag-other';
 }
 
+// Build table
 const tbody = document.getElementById('tbody');
 const medals = ['🥇','🥈','🥉'];
 MODELS.forEach((r,i) => {
@@ -147,19 +183,22 @@ MODELS.forEach((r,i) => {
     <td style="${isHuman?'color:#fde68a':''}">${r[6]}</td>
     <td style="${isHuman?'color:#fde68a':''}">${r[7]}</td>
     <td style="${isHuman?'color:#fde68a':''}">${r[8]}</td>
-    <td style="${isHuman?'color:#fde68a':''}">${r[9]}</td>`;
+    <td style="${isHuman?'color:#fde68a':''}">${r[9]}</td>
+    <td style="${isHuman?'color:#f59e0b;font-weight:bold':r[10]!==null?'color:#34d399;font-weight:bold':'color:#374151'}">${r[10] !== null ? r[10]+'%' : '—'}</td>`;
   tbody.appendChild(tr);
 });
-
 let chart;
 function showBenchmark(key, el) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   el.classList.add('active');
-  
-  const bench = BENCHMARKS[key];
-  document.getElementById('helper-text').innerHTML = bench.text;
 
-  const sorted = [...MODELS].sort((a,b) => b[bench.idx] - a[bench.idx]);
+  const bench = BENCHMARKS[key];
+  // For OSWorld: only show models with data (non-null), always include human baseline
+  let pool = [...MODELS];
+  if (bench.nullFilter) {
+    pool = pool.filter(d => d[bench.idx] !== null);
+  }
+  const sorted = pool.sort((a,b) => b[bench.idx] - a[bench.idx]);
   const labels = sorted.map(d => d[0]);
   const values = sorted.map(d => d[bench.idx]);
   const colors = sorted.map(d => d[1] === '—' ? '#f59e0b' : (COLORS[d[1]] || '#6b7280'));
@@ -182,7 +221,7 @@ function showBenchmark(key, el) {
       indexAxis: 'y',
       responsive: true,
       maintainAspectRatio: false,
-      animation: { duration: 300 },
+      animation: { duration: 400 },
       plugins: {
         legend: { display: false },
         tooltip: {
@@ -213,22 +252,10 @@ function showBenchmark(key, el) {
   });
 }
 
+// Init on DOMContentLoaded to ensure canvas is ready
 document.addEventListener('DOMContentLoaded', () => {
   showBenchmark('score', document.querySelector('.tab'));
 });
 </script>
 </body>
 </html>
-
-<div style="max-width: 860px; margin: 16px auto; padding: 16px; background: #161625; border-radius: 10px; font-size: 0.75em; color: #6b7280; border-top: 1px solid #374151;">
-  <b style="color:#9ca3af; font-size: 1.1em; display: block; margin-bottom: 8px;">📚 Fuentes de datos y metodología (Marzo 2026)</b>
-  <p style="margin-bottom: 4px;">Datos recopilados y consolidados por OpenClaw AI a partir de los principales leaderboards y benchmarks de la industria:</p>
-  <ul style="list-style-type: none; margin-bottom: 10px;">
-    <li>• <b>LXT AI Benchmarks:</b> lxt.ai/blog/llm-benchmarks</li>
-    <li>• <b>Vellum Leaderboard:</b> vellum.ai/llm-leaderboard</li>
-    <li>• <b>Bracai.eu:</b> GPQA Benchmark Leaderboard</li>
-    <li>• <b>SWE-bench Pro:</b> morphllm.com/swe-bench-pro</li>
-    <li>• <b>Price Per Token:</b> pricepertoken.com/leaderboards</li>
-  </ul>
-  <p><i>Nota: El "Score Compuesto" es una métrica ponderada calculada específicamente para Station Digital usando los siguientes pesos: GPQA Diamond (25%), SWE-bench (25%), MMLU (15%), HumanEval (15%), MATH-500 (10%), AIME 2025 (10%).</i></p>
-</div>
